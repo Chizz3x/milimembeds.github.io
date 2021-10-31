@@ -23,7 +23,7 @@ const author_text_inp = document.getElementById('author-text-input'),
       title_text_inp = document.getElementById('title-text-input'),
       title_link_inp = document.getElementById('title-link-input'),
       desc_inp = document.getElementById('desc-input'),
-      color_inp = document.getElementById('color_input'),
+      color_inp = document.getElementById('color-input'),
       image_inp = document.getElementById('image-input'),
       thumb_inp = document.getElementById('thumb-input'),
       footer_text_inp = document.getElementById('footer-text-input'),
@@ -59,6 +59,28 @@ let liveTime,
   }
 */
 
+function newEmbed() {
+  localStorage.milimEmbed = '{}';
+
+  author_text_inp.value = '';
+  author_image_inp.value = '';
+  author_link_inp.value = '';
+  title_text_inp.value = '';
+  title_link_inp.value = '';
+  desc_inp.value = '';
+  color_inp.value = '';
+  image_inp.value = '';
+  thumb_inp.value = '';
+  footer_text_inp.value = '';
+  footer_image_inp.value = '';
+  if(!!liveTime) clearInterval(liveTime);
+  timestamp_inp.value = null;
+  let fields = document.getElementsByClassName('embed-build-field-remove');
+  let fieldsLength = fields.length;
+  for(let i = 0; i < fieldsLength; i++)
+    removeInputField({currentTarget: fields[0]});
+}
+
 function fillInputs() {
   let embed = JSON.parse(localStorage.milimEmbed);
   let props = Object.keys(embed);
@@ -91,7 +113,20 @@ if(!localStorage.milimEmbed) {
     {
       author_text: 'This is an author text',
       author_link: 'https://discord.gg/zG83r6M',
-      author_image: '././data/images/pfp.png'
+      author_image: 'https://cdn.discordapp.com/embed/avatars/5.png',
+      title_text: "This is your title!",
+      title_link: "https://discord.gg/zG83r6M",
+      desc: "OH and this is description! For now it doesnt support any markdown :,(",
+      color: '#8334eb',
+      image: 'https://cdn.discordapp.com/embed/avatars/5.png',
+      thumb: 'https://cdn.discordapp.com/embed/avatars/5.png',
+      footer_text: 'This is your footer text.',
+      footer_image: 'https://cdn.discordapp.com/embed/avatars/5.png',
+      timestamp: '%now%',
+      fields: [
+        {title: "1st field", value: "And here is the title"},
+        {title: '2nd field', value: "And that's another title"}
+      ]
     }
   )
 };
@@ -242,7 +277,8 @@ function getImageDims(url) {
 
 // remove input field
 function removeInputField(e) {
-  let field_item = e.currentTarget.closest('.embed-build-field-item')
+  let field_item = e.currentTarget.closest('.embed-build-field-item');
+
   let index = field_item.getAttribute('data-index');
 
   field_item.remove();
@@ -259,9 +295,12 @@ function removeInputField(e) {
   };
 
   let embed = JSON.parse(localStorage.milimEmbed);
-  embed.fields.splice(index - 1, 1);
-  if(!embed.fields.length) delete embed.fields;
-  localStorage.milimEmbed = JSON.stringify(embed);
+
+  if(!!embed.fields) {
+    embed.fields.splice(index - 1, 1);
+    if(!embed.fields.length) delete embed.fields;
+    localStorage.milimEmbed = JSON.stringify(embed);
+  };
 
   rebuildFields(embed);
 }
@@ -269,7 +308,7 @@ function removeInputField(e) {
 function removeColor() {
   let embed = JSON.parse(localStorage.milimEmbed);
 
-  document.getElementById('color-input').value = '';
+  color_inp.value = '';
   delete embed.color;
   preview_embed.removeAttribute('style');
 
@@ -465,11 +504,9 @@ async function inputted(e, load) {
         title.classList.add('hidden');
       };
 
-      (
-        !embed.title_link ?
-          title_text
-        : title_text.children[0]
-      ).innerHTML = val;
+      title_text.innerHTML = !!embed.title_link ?
+        `<a href="${embed.title_link}">${val}</a>`
+      : val;
 
       break;
     case 'title-link-input':
@@ -507,10 +544,10 @@ async function inputted(e, load) {
       if(!!val) {
         embed.image = val;
         let img_dims = await getImageDims(val);
-        if(img_dims.width > img_dims.height) {
+        if(img_dims.width > 400) {
           image.style.width = image.children[0].style.width = '400px';
           image.style.height = image.children[0].style.height = `${(1 / img_dims.width * 400) * img_dims.height}px`;
-        } else if(img_dims.width < img_dims.height) {
+        } else if(img_dims.height > 300) {
           image.style.height = image.children[0].style.height = '300px';
           image.style.width = image.children[0].style.width = `${(1 / img_dims.height * 300) * img_dims.width}px`;
         } else {
@@ -530,10 +567,10 @@ async function inputted(e, load) {
       if(!!val) {
         embed.thumb = val;
         let img_dims = await getImageDims(val);
-        if(img_dims.width > img_dims.height) {
+        if(img_dims.width > 80) {
           thumb.style.width = thumb.children[0].style.width = '80px';
           thumb.style.height = thumb.children[0].style.height = `${(1 / img_dims.width * 80) * img_dims.height}px`;
-        } else if(img_dims.width < img_dims.height) {
+        } else if(img_dims.height > 80) {
           thumb.style.height = thumb.children[0].style.height = '80px';
           thumb.style.width = thumb.children[0].style.width = `${(1 / img_dims.height * 80) * img_dims.width}px`;
         } else {
