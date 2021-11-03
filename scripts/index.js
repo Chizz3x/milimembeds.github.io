@@ -426,7 +426,7 @@ function copyCommand(e) {
     delete embed.author_image;
   };
   if(!embed.title_text) {
-    delete embed.author_link;
+    delete embed.title_link;
   };
   if(!embed.footer_text) {
     delete embed.footer_image;
