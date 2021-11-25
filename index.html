@@ -183,7 +183,10 @@
           <div onclick='newEmbed()' id='new-embed-btn' class='button'>
             New embed <span class='icon-content'></span>
           </div>
-          <div id='your-embeds-btn' class='button'>
+          <div onClick='showTemplates()' id='your-embeds-btn' class='button'>
+            <div id="embed-templates-pop" class="hidden">
+              <ul id="embed-templates-pop-ul"></ul>
+            </div>
             Your embeds <span class='icon-folder'></span>
           </div>
           <div id='switch-theme-btn' class='button'>

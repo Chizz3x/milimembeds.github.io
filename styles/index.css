@@ -362,5 +362,35 @@ body {
 }
 
 /*
+  embed templates pop
+*/
+#your-embeds-btn {
+  position: relative;
+}
+#embed-templates-pop {
+  background-color: var(--dc-2);
+  border-radius: 5px;
+  left: 0;
+  right: 0;
+  display: fixed;
+  position: absolute;
+  transform: translateY(-100%);
+}
+#embed-templates-pop ul {
+  list-style: none;
+  padding-left: 0;
+  max-height: 280px;
+}
+#embed-templates-pop ul li {
+  padding-bottom: 5px;
+  padding-top: 5px;
+  padding-left: 10px;
+  padding-right: 5px;
+}
+#embed-templates-pop ul li:hover {
+  background-color: var(--dc-1);
+}
+
+/*
   markdown
 */

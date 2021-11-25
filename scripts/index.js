@@ -108,6 +108,41 @@ function fillInputs() {
   }
 }
 
+function loadTemplate(index) {
+  
+}
+
+function showTemplates() {
+  let embedTemplates = JSON.parse(localStorage.milimEmbedTemplates);
+  let box = document.getElementById('embed-templates-pop');
+  let list = document.getElementById('embed-templates-pop-ul');
+
+  if(box.classList.contains('hidden')) {
+    for(let i = 0; i < embedTemplates.length; i++) {
+      let line = document.createElement('li');
+      line.innerHTML = embedTemplates[i].name;
+      line.title = 'Load';
+      line.addEventListener('click', () => {
+        loadTemplate(i);
+      });
+      list.appendChild(line);
+    };
+
+    if(embedTemplates.length < 1)
+      line.innerHTML = 'No templates saved.';
+
+    box.classList.remove('hidden');
+  } else {
+    let childrenLength = list.children.length;
+    for(let i = 0; i < childrenLength; i++)
+      list.removeChild(list.children[0]);
+
+    list.innerHTML = '';
+
+    box.classList.add('hidden');
+  }
+}
+
 if(!localStorage.milimEmbed) {
   localStorage.milimEmbed = JSON.stringify(
     {
@@ -135,6 +170,11 @@ fillInputs();
 
 if(!localStorage.milimEmbedTemplates)
   localStorage.milimEmbedTemplates = "[]";
+else {
+  let embedTemplates = JSON.parse(localStorage.milimEmbedTemplates);
+  embedTemplates = embedTemplates.filter(f => !!f.name && !!f.embed);
+  localStorage.milimEmbedTemplates = JSON.stringify(embedTemplates);
+};
 
 if(!localStorage.milimEmbedTemplateName) {
   localStorage.milimEmbedTemplateName = 'Template 1';
