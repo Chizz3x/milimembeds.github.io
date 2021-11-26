@@ -37,6 +37,13 @@
                   <input onkeypress='editTemplateClose(event)' onblur='editTemplateClose(event)' class='hidden' id='template-name-input' type="text">
                 </div>
                 <div class="embed-build-block">
+                  <h3 class='embed-build-title'>Content <span class='icon-content'></span></h3>
+                  <div class="custom-input">
+                    <span class='embed-build-span'>Text:</span>
+                    <textarea id='content-input' class='embed-input-big' type="text"></textarea>
+                  </div>
+                </div>
+                <div class="embed-build-block">
                   <h3 class='embed-build-title'>Author <span class='icon-author'></span></h3>
                   <div class="custom-input">
                     <span class='embed-build-span'>Text:</span>
@@ -139,6 +146,8 @@
         </div>
         <div id='container-right'>
           <div id='preview-box' class='scroller'>
+            <div id="content">
+            </div>
             <div id='preview-embed'>
               <div class="embed-box">
                 <div id='author' class="embed-author embed-text hidden">

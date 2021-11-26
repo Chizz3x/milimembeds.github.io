@@ -15,7 +15,8 @@ const preview_embed = document.getElementById('preview-embed'),
       timestamp_splitter = document.getElementById('timestamp-splitter'),
       field_items = document.getElementById('fields'),
       template_name = document.getElementById('template-name'),
-      editor_UI = document.getElementById('editor-ui');
+      editor_UI = document.getElementById('editor-ui'),
+      content = document.getElementById('content');
 
 const author_text_inp = document.getElementById('author-text-input'),
       author_image_inp = document.getElementById('author-image-input'),
@@ -28,7 +29,8 @@ const author_text_inp = document.getElementById('author-text-input'),
       thumb_inp = document.getElementById('thumb-input'),
       footer_text_inp = document.getElementById('footer-text-input'),
       footer_image_inp = document.getElementById('footer-image-input'),
-      timestamp_inp = document.getElementById('timestamp-input');
+      timestamp_inp = document.getElementById('timestamp-input'),
+      content_inp = document.getElementById('content-input');
 
 let liveTime,
     copiedTimeout;
@@ -62,6 +64,9 @@ let liveTime,
 function newEmbed() {
   localStorage.milimEmbed = '{}';
 
+  template_name.innerHTML = `Template ${JSON.parse(localStorage.milimEmbedTemplates).length + 1}`;
+
+  content_inp.value = '';
   author_text_inp.value = '';
   author_image_inp.value = '';
   author_link_inp.value = '';
@@ -81,13 +86,23 @@ function newEmbed() {
     removeInputField({currentTarget: fields[0]});
 }
 
-function fillInputs() {
+function fillInputs(reload) {
   let embed = JSON.parse(localStorage.milimEmbed);
   let props = Object.keys(embed);
 
   let el;
   for(let i = 0; i < props.length; i++) {
     if(props[i] == 'fields') {
+      if(!!reload) {
+        let field_items_len = field_items.children.length;
+        for(let i = 0; i < field_items_len; i++)
+          field_items.removeChild(field_items.children[0]);
+        let field_inputs = document.getElementsByClassName('embed-build-field-box')[0];
+        let field_inputs_len = field_inputs.children.length;
+        for(let i = 0; i < field_inputs_len; i++)
+          if(field_inputs.children[0].classList.contains('embed-build-field-item'))
+            field_inputs.removeChild(field_inputs.children[0]);
+      };
       for(let j = 0; j < embed.fields.length; j++) {
         createInputField(embed.fields[j].title, embed.fields[j].value, true);
       }
@@ -108,8 +123,18 @@ function fillInputs() {
   }
 }
 
-function loadTemplate(index) {
-  
+function loadTemplate(template) {
+  localStorage.milimEmbed = JSON.stringify(template.embed);
+
+  fillInputs(true);
+
+  template_name.innerHTML = template.name;
+  localStorage.milimEmbedTemplateName = template.name;
+}
+
+function deleteTemplate(index, templates) {
+  templates.splice(index, 1);
+  localStorage.milimEmbedTemplates = JSON.stringify(templates);
 }
 
 function showTemplates() {
@@ -120,16 +145,37 @@ function showTemplates() {
   if(box.classList.contains('hidden')) {
     for(let i = 0; i < embedTemplates.length; i++) {
       let line = document.createElement('li');
-      line.innerHTML = embedTemplates[i].name;
-      line.title = 'Load';
-      line.addEventListener('click', () => {
-        loadTemplate(i);
+
+      let title_el = document.createElement('div');
+      title_el.classList.add('load-template-item-name');
+      title_el.title = "Load '"+embedTemplates[i].name+"'";
+      title_el.innerHTML = embedTemplates[i].name;
+
+      let remove_el = document.createElement('div');
+      remove_el.classList.add('load-template-item-remove');
+      remove_el.title = 'Delete';
+      let remove_el_icon = document.createElement('span');
+      remove_el_icon.classList.add('icon-bin');
+
+      title_el.addEventListener('click', () => {
+        loadTemplate(embedTemplates[i]);
       });
+
+      remove_el.addEventListener('click', () => {
+        deleteTemplate(i, embedTemplates);
+      });
+
+      remove_el.appendChild(remove_el_icon);
+      line.appendChild(title_el);
+      line.appendChild(remove_el);
       list.appendChild(line);
     };
 
-    if(embedTemplates.length < 1)
-      line.innerHTML = 'No templates saved.';
+    if(embedTemplates.length < 1) {
+      let line = document.createElement('li');
+      line.innerHTML = 'Empty';
+      list.appendChild(line);
+    };
 
     box.classList.remove('hidden');
   } else {
@@ -179,6 +225,8 @@ else {
 if(!localStorage.milimEmbedTemplateName) {
   localStorage.milimEmbedTemplateName = 'Template 1';
   document.getElementById('template-name').innerHTML = 'Template 1';
+} else {
+  document.getElementById('template-name').innerHTML = localStorage.milimEmbedTemplateName;
 };
 
 if(!localStorage.milimPrefix)
@@ -668,6 +716,18 @@ async function inputted(e, load) {
       };
 
       footer_image.src = val;
+
+      break;
+    case 'content-input':
+      if(!!val) {
+        embed.content = val;
+        content.classList.remove('hidden');
+      } else {
+        delete embed.content;
+        content.classList.add('hidden');
+      };
+
+      content.innerHTML = val;
 
       break;
     default:
