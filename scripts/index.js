@@ -66,6 +66,29 @@ function newEmbed() {
 
   template_name.innerHTML = `Template ${JSON.parse(localStorage.milimEmbedTemplates).length + 1}`;
 
+  content.innerHTML = '';
+  if(!!author_text.children[0])
+    author_text.removeChild(author_text.children[0]);
+  author.classList.add('hidden');
+  author_image.removeAttribute('src');
+  author_image.classList.add('hidden');
+  if(!!title_text.children[0])
+    title_text.removeChild(title_text.children[0]);
+  title.classList.add('hidden');
+  desc.innerHTML = '';
+  desc.classList.add('hidden');
+  removeColor();
+  image.removeAttribute('src');
+  image.classList.add('hidden');
+  thumb.removeAttribute('src');
+  thumb.classList.add('hidden');
+  footer_text.innerHTML = '';
+  footer_image.removeAttribute('src');
+  footer_image.classList.add('hidden');
+  timestamp_splitter.classList.add('hidden');
+  timestamp_date.innerHTML = '';
+  footer.classList.add('hidden');
+
   content_inp.value = '';
   author_text_inp.value = '';
   author_image_inp.value = '';
