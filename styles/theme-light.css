@@ -1,0 +1,22 @@
+:root {
+  --bg-1: gray;
+  --bg-2: white;
+  --bg-3: white;
+
+  --red: hsl(359, calc(var(--saturation-factor, 1) * 82.6%), 59.4%);
+
+  --dc-1: #fff;
+  --dc-2: #f2f3f5;
+  --dc-3: lightgray;
+  --dc-ter: #e3e5e8;
+  --dc-text-1: #2e3338;
+  --dc-header: #4f5660;
+  --dc-bg-modif: rgba(6,6,7,0.08);
+  --dc-link: hsl(212,calc(var(--saturation-factor, 1)*100%),43.9%);
+  --dc-text-2: #747f8d;
+  --dc-text-link: hsl(212,calc(var(--saturation-factor, 1)*100%),43.9%);
+  --dc-interactive: #c7ccd1;
+  --dc-spoiler: #b9bbbe;
+  --dc-spoiler-hover: rgba(185,187,190,.8);
+  --dc-spoiler-bg: rgba(0,0,0,.1);
+}

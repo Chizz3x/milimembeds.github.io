@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <title>Milim embed builder</title>
 
-    <link id='dark-theme' rel="stylesheet" href="styles/theme-dark.css"></link>
-    <link id='dark-light' rel="stylesheet" href="styles/theme-light.css"></link>
+    <link id='theme-style' rel="stylesheet" href="styles/theme-dark.css"></link>
     <link rel="stylesheet" href="styles/index.css"></link>
     <link rel="stylesheet" href="styles/icons.css"></link>
 
@@ -186,7 +185,7 @@
             </div>
             Your embeds <span class='icon-folder'></span>
           </div>
-          <div id='switch-theme-btn' class='button'>
+          <div onClick='switchTheme()' id='switch-theme-btn' class='button'>
             Light theme <span class='icon-sun'></span>
           </div>
         </div>
@@ -194,6 +193,10 @@
     </div>
 
     <script src="data/consts.js"></script>
+    <script src="scripts/emoji.js"></script>
+
+    <script src="node_modules/twemoji/dist/twemoji.js"></script>
+    <script src="scripts/markdown.js"></script>
     <script src="scripts/index.js"></script>
   </body>
 </html>

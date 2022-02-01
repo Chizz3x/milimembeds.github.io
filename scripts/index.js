@@ -32,6 +32,9 @@ const author_text_inp = document.getElementById('author-text-input'),
       timestamp_inp = document.getElementById('timestamp-input'),
       content_inp = document.getElementById('content-input');
 
+const themeStyle = document.getElementById('theme-style');
+const themeBtn = document.getElementById('switch-theme-btn');
+
 let liveTime,
     copiedTimeout;
 
@@ -61,10 +64,33 @@ let liveTime,
   }
 */
 
+const themes = [
+  'dark',
+  'light'
+]
+
+function changeTheme(theme) {
+  themeStyle.href = `styles/theme-${theme}.css`;
+  let nextThemeIndex = themes.indexOf(theme) + 1;
+  if(nextThemeIndex >= themes.length)
+    nextThemeIndex = 0;
+  themeBtn.textContent = `${themes[nextThemeIndex][0].toUpperCase()}${themes[nextThemeIndex].slice(1)} theme`
+}
+
+function switchTheme() {
+  let newThemeIndex = themes.indexOf(localStorage.milimTheme) + 1;
+  if(newThemeIndex >= themes.length)
+    newThemeIndex = 0;
+
+  localStorage.milimTheme = themes[newThemeIndex];
+  changeTheme(themes[newThemeIndex]);
+}
+
 function newEmbed() {
   localStorage.milimEmbed = '{}';
 
-  template_name.innerHTML = `Template ${JSON.parse(localStorage.milimEmbedTemplates).length + 1}`;
+  localStorage.milimEmbedTemplateName = `Template ${JSON.parse(localStorage.milimEmbedTemplates).length + 1}`;
+  template_name.innerHTML = localStorage.milimEmbedTemplateName;
 
   content.innerHTML = '';
   if(!!author_text.children[0])
@@ -115,7 +141,7 @@ function fillInputs(reload) {
 
   let el;
   for(let i = 0; i < props.length; i++) {
-    if(props[i] == 'fields') {
+    if(props[i] === 'fields') {
       if(!!reload) {
         let field_items_len = field_items.children.length;
         for(let i = 0; i < field_items_len; i++)
@@ -131,8 +157,8 @@ function fillInputs(reload) {
       }
     } else {
       el = document.getElementById(props[i].replace('_', '-') + '-input');
-      if(props[i] == 'timestamp') {
-        if(embed[props[i]] == '%now%') {
+      if(props[i] === 'timestamp') {
+        if(embed[props[i]] === '%now%') {
           setCurrentDate();
         } else {
           el.value = getTDate(new Date(embed[props[i]]));
@@ -235,6 +261,12 @@ if(!localStorage.milimEmbed) {
   )
 };
 
+if(!localStorage.milimTheme) {
+  localStorage.milimTheme = 'dark';
+} else if(localStorage.milimTheme !== 'dark') {
+  changeTheme(localStorage.milimTheme);
+};
+
 fillInputs();
 
 if(!localStorage.milimEmbedTemplates)
@@ -273,7 +305,7 @@ function createPreviewField(index, title, value) {
 
   let field_value = document.createElement('div');
   field_value.classList.add('embed-field-value');
-  if(!!value) field_value.innerHTML = value;
+  if(!!value) field_value.innerHTML = parseAllMD(value);
 
   cont.appendChild(field_title);
   cont.appendChild(field_value);
@@ -345,10 +377,10 @@ function createInputField(field_title, field_value, load) {
   value_textarea.addEventListener('input', inputted);
   if(!!field_value) value_textarea.value = field_value;
 
-  remove_btn.appendChild(remove_icon);
-
-  name.appendChild(remove_btn);
   name.appendChild(name_text);
+
+  remove_btn.appendChild(remove_icon);
+  name.appendChild(remove_btn);
 
   title.appendChild(title_span);
   title.appendChild(title_textarea);
@@ -566,6 +598,18 @@ async function inputted(e, load) {
   let val = e.target.value.trim();
 
   switch(e.target.id) {
+    case 'content-input':
+      if(!!val) {
+        embed.content = val;
+        content.classList.remove('hidden');
+      } else {
+        delete embed.content;
+        content.classList.add('hidden');
+      };
+
+      content.innerHTML = parseAllMD(val);
+
+      break;
     case 'template-name-input':
       localStorage.milimEmbedTemplateName = val;
       template_name.innerHTML = val;
@@ -639,7 +683,7 @@ async function inputted(e, load) {
         desc.classList.add('hidden');
       };
 
-      desc.innerHTML = val;
+      desc.innerHTML = parseAllMD(val);
 
       break;
     case 'color-input':
@@ -741,33 +785,25 @@ async function inputted(e, load) {
       footer_image.src = val;
 
       break;
-    case 'content-input':
-      if(!!val) {
-        embed.content = val;
-        content.classList.remove('hidden');
-      } else {
-        delete embed.content;
-        content.classList.add('hidden');
-      };
-
-      content.innerHTML = val;
-
-      break;
     default:
       if(e.target.id.startsWith('field-')) {
         let index = e.target.getAttribute('data-index');
         let name = e.target.getAttribute('data-name');
         let f = document.getElementById(`field-${index}`);
 
-        let other_name = name == 'title' ? 'value' : 'title';
+        let other_name = name === 'title' ? 'value' : 'title';
         let other_val = (document.getElementById(`field-${index}-${other_name}-input`) || {value: ''}).value.trim();
 
         embed.fields[index - 1][name] = val;
         embed.fields[index - 1][other_name] = other_val;
 
         if(!!embed.fields[index - 1][name] && !!embed.fields[index - 1][other_name]) {
-          f.getElementsByClassName(`embed-field-${name}`)[0].innerHTML = embed.fields[index - 1][name];
-          f.getElementsByClassName(`embed-field-${other_name}`)[0].innerHTML = embed.fields[index - 1][other_name];
+          f.getElementsByClassName(`embed-field-${name}`)[0].innerHTML = name === 'value' ?
+            parseAllMD(embed.fields[index - 1][name])
+          : embed.fields[index - 1][name];
+          f.getElementsByClassName(`embed-field-${other_name}`)[0].innerHTML = other_name === 'value' ?
+            embed.fields[index - 1][other_name]
+          : parseAllMD(embed.fields[index - 1][other_name]);
           f.classList.remove('hidden');
         } else f.classList.add('hidden');
       }
@@ -790,6 +826,14 @@ function arrayify(els) {
 
   let inputs = builder.getElementsByTagName('input');
   let textareas = builder.getElementsByTagName('textarea');
+
+  for(let i = 0; i < textareas.length; i++) {
+    textareas[i].setAttribute("style", "height:" + (textareas[i].scrollHeight) + "px;");
+    textareas[i].addEventListener("input", function() {
+      this.style.height = "auto";
+      this.style.height = (this.scrollHeight) + "px";
+    }, false);
+  };
 
   let els = arrayify(inputs);
   els = els.concat(arrayify(textareas));

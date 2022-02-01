@@ -1,0 +1,23 @@
+{
+  "name": "milimembeds.github.io",
+  "version": "1.0.0",
+  "description": "Embed generation for Milim bot",
+  "main": "index.js",
+  "dependencies": {
+    "twemoji": "^13.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chizz3x/milimembeds.github.io.git"
+  },
+  "author": "Chizz3x",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chizz3x/milimembeds.github.io/issues"
+  },
+  "homepage": "https://github.com/Chizz3x/milimembeds.github.io#readme"
+}
