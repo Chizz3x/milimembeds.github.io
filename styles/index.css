@@ -139,6 +139,9 @@ body {
 .embed-title a {
   color: var(--dc-text-link);
 }
+#fields {
+  grid-column: 1/1;
+}
 .embed-field-title {
   margin-bottom: 2px;
   color: var(--dc-text-1);
